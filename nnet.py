@@ -26,16 +26,16 @@ class Nnet:
         return np.max(self.get_output(input))
 
 
-    def modify_array(self):
-        Nnet.modify_array(self.wi_i_h)
-        Nnet.modify_array(self.wi_h_o)
+    def modify_weights(self):
+        Nnet.modify_array(self.w_i_h)
+        Nnet.modify_array(self.w_h_o)
 
     def create_mixed_weights(self, net1, net2):
-        self.weight_i_h = Nnet.get_mix_from_arrays(net1.wi_i_h, net2.wi_i_h)
-        self.weight_i_h = Nnet.get_mix_from_arrays(net1.wi_h_o, net2.wi_h_o)
+        self.w_i_h = Nnet.get_mix_from_arrays(net1.w_i_h, net2.w_i_h)
+        self.w_h_o = Nnet.get_mix_from_arrays(net1.w_h_o, net2.w_h_o)
 
     def modify_array(a):
-        for x in np.nditer(a, op_flag=['readwrite']):
+        for x in np.nditer(a, op_flags=['readwrite']):
             if random.random() < 0.2:
                 x[...] = np.random.random_sample() - 0.5
         

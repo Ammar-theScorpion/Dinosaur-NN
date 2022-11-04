@@ -26,7 +26,7 @@ class Cactus:
 
     def alltick(self, dt):
         if self.state == CATCUS_MOVING:
-            self.tick(-(40/dt*self.speed))
+            self.tick(-(60/dt*self.speed))
             self.render()
             return self.check_status()
         return CATCUS_DONE
@@ -41,11 +41,6 @@ class CactusHandler:
     def tick(self, dt):
         self.time += 4/dt
 
-        if self.time >= self.add:
-            self.add = random.randint(60, 120)
-            self.time = 0
-            self.cactuses.append(Cactus(self.window, random.choice([CATCUS_T_0, CATCUS_T_1, CATCUS_T_2])))
-
         rm = []
         for c in self.cactuses:
             s = c.alltick(dt)
@@ -54,3 +49,5 @@ class CactusHandler:
         for x in rm:
             self.cactuses.remove(x)
 
+    def append(self):
+        self.cactuses.append(Cactus(self.window, random.choice([CATCUS_T_0, CATCUS_T_1, CATCUS_T_2])))

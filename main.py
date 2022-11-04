@@ -3,6 +3,7 @@ from bird import BirdHandler
 from player import PlayerHandler
 from cactus import CactusHandler
 from defs import *
+import random
 def update_label(data, title, font, x, y, window):
     label = font.render('{} {}'.format(title, data), 1, DATA_FONT_COLOR)
     window.blit(label, (x, y))
@@ -35,6 +36,8 @@ def run():
     clock = pygame.time.Clock()
     dt = 0
     game_time = 0
+    add = 30
+    time = 0
     num_iterations = 1
     while running:
         dt = clock.tick(FPS)
@@ -46,9 +49,20 @@ def run():
         window.fill((255, 255, 255))
 
         catcus.tick(int(dt-game_time/9000))
-        if game_time>=20:
+        if game_time>=2000:
             birds.tick(int(dt-game_time/9000))
+        temp = random.randint(0,1)
 
+        time += 4/dt
+
+        if time >= add:
+            add = random.randint(40, 100)
+            time = 0
+
+            if temp and game_time>=20000:
+                birds.append()
+            else:
+                catcus.append()
         num_alive = p.tick(int(dt-game_time/9000), bg_rect, catcus.cactuses, birds.cactuses)
         if num_alive == 0:
             game_time = 0

@@ -33,15 +33,16 @@ class Player:
 
 
     def set_position(self, x, y):
-        self.rect.centerx = x
-        self.rect.centery = y
-    
+        self.rect.centerx = x-20 
+        self.rect.centery = y+20
+        self.rect.left = x+10
     def jump(self):
         self.state = DINO_S_J
 
     def duck(self):
-        self.current = DINO_S_D
-        self.state = DINO_S_D
+        if self.state!= DINO_S_J: 
+            self.current = DINO_S_D
+            self.state = DINO_S_D
 
     def run(self):
         self.set_position(DINO_X, DINO_Y)
@@ -72,7 +73,7 @@ class Player:
             else:
                 F = -(0.5*1*(self.speed**2))
             
-            self.speed-=0.3
+            self.speed-=0.37
             self.rect.centery -= F
         
         elif self.state == DINO_S_D:
@@ -89,9 +90,9 @@ class Player:
         if self.state != DINO_DEAD:
             input = self.get_input(catcus, birds)
             value = self.nnet.get_max_output(input)
-            if value>=0.5:
+            if value>0.5:
                 self.jump()
-            elif value>=0.35:
+            elif value>=0.45:
                 self.duck()
             self.tick(dt)
             self.check_staus(bg_rect, catcus, birds)
@@ -119,6 +120,7 @@ class Player:
                 closesty = c.rect.centery
                 if i<len(catus)-1:
                     gap = catus[i+1].rect.left
+
         for i, c in  enumerate(birds):
             if c.rect.right<self.rect.left:
                 self.fitness+=1
@@ -141,6 +143,9 @@ class Player:
 
     def create_offspring(p1, p2, window):
         dino = Player(window)
+        dino.nnet.create_mixed_weights(p1.nnet, p2.nnet)
+        return dino
+
 class PlayerHandler:
     def __init__(self, window) -> None:
         self.window = window
@@ -170,4 +175,35 @@ class PlayerHandler:
         for b in self.dinos[0:10]:
             print('fitness:', b.fitness)
 
-        self.create_generation()
+
+        cut_off = int(len(self.dinos) * MUTATION_CUT_OFF)
+        good_birds = self.dinos[0:cut_off]
+        bad_birds = self.dinos[cut_off:]
+        num_bad_to_take = int(len(self.dinos) * MUTATION_BAD_TO_KEEP)
+
+        for b in bad_birds:
+            b.nnet.modify_weights()
+
+        new_birds = []
+
+        idx_bad_to_take = np.random.choice(np.arange(len(bad_birds)), num_bad_to_take, replace=False)
+
+        for index in idx_bad_to_take:
+            new_birds.append(bad_birds[index])
+
+        new_birds.extend(good_birds)
+
+        children_needed = len(self.dinos) - len(new_birds)
+
+        while len(new_birds) < len(self.dinos):
+            idx_to_breed = np.random.choice(np.arange(len(good_birds)), 2, replace=False)
+            if idx_to_breed[0] != idx_to_breed[1]:
+                new_bird = Player.create_offspring(good_birds[idx_to_breed[0]], good_birds[idx_to_breed[1]], self.window)
+                if random.random() < MUTATION_MODIFY_CHANCE_LIMIT:
+                    new_bird.nnet.modify_weights()
+                new_birds.append(new_bird)
+
+        for b in new_birds:
+            b.reset()
+
+        self.dinos = new_birds

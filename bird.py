@@ -37,7 +37,7 @@ class Bird:
 
     def alltick(self, dt):
         if self.state == CATCUS_MOVING:
-            self.tick(-(40/dt*self.speed))
+            self.tick(-(60/dt*self.speed))
             self.render(dt)
             return self.check_status()
         return CATCUS_DONE
@@ -50,12 +50,6 @@ class BirdHandler:
         self.cactuses = []
     
     def tick(self, dt):
-        self.time += 4/dt
-        if self.time >= self.add:
-            self.add = random.randint(120, 120+60)
-            self.time = 0
-            self.cactuses.append(Bird(self.window, random.choice([0, -80, -160])))
-
         rm = []
         for c in self.cactuses:
             s = c.alltick(dt)
@@ -64,3 +58,5 @@ class BirdHandler:
         for x in rm:
             self.cactuses.remove(x)
 
+    def append(self):
+        self.cactuses.append(Bird(self.window, random.choice([0, -80, -175])))
