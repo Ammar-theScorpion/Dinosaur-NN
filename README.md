@@ -1,0 +1,2 @@
+# Dinosaur-NN
+It is implemented in the Java programming language, which provides a stable and reliable platform for the game to run on. In addition to traditional gameplay elements, the game also incorporates a neural network, which allows it to learn and adapt over time. This adds an extra layer of depth and strategy to the game, as the neural network can analyze and make decisions based on patterns and trends in the gameplay data.
